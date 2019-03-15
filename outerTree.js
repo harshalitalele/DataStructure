@@ -9,7 +9,10 @@
  * @param {Point[]} points
  * @return {Point[]}
  */
-var outerTrees = function(points) {
+var points = [[1,1],[2,2],[2,0],[2,4],[3,3],[4,2]];
+//var points = [[1,2],[2,2],[4,2]];
+
+var outerTrees = function() {
     var fence = [points[0], points[1], points[2]],
         refPt = getRefPt(fence);
     
@@ -18,7 +21,9 @@ var outerTrees = function(points) {
         updateFence(fence, currentPt, refPt);
         refPt = getRefPt(fence);
     }
-    //validate firs 3 points after this
+    //validate first 3 points after this
+    alert(fence);
+    return fence;
 };
 
 function updateFence(fence, newPt, refPt) {
@@ -28,12 +33,14 @@ function updateFence(fence, newPt, refPt) {
         var currentPt = fence[i],
             isPtValid = validateNewPt(lastPt, currentPt, newPt, refPt);
         if(!lastValidation && !isPtValid) {
-            //chuck the common pt check
-            // else include new pt
+            fence[i-1][0] = newPt[0];
+            fence[i-1][1] = newPt[1];
+            return;
         }
         if(!lastValidation && isPtValid) {
             //include last pt in fence
-            fence.push(fence);
+            fence.push(newPt);
+            return;
         }
         if(lastValidation && !isPtValid) {
             lastValidation = false;
@@ -61,4 +68,5 @@ function getRefPt(fence) {
     }
     refPt[0] = refPt[0]/fence.length;
     refPt[1] = refPt[1]/fence.length;
+    return refPt;
 }
