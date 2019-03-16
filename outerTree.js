@@ -18,17 +18,17 @@ var outerTrees = function() {
     
     for(var i = 3; i < points.length; i++) {
         var currentPt = points[i];
-        updateFence(fence, currentPt, refPt);
+        fence = updateFence(fence, currentPt, refPt);
         refPt = getRefPt(fence);
     }
     //validate first 3 points after this
-    var nextPts = fence.splice(0,3);
-    refPt = getRefPt(fence);
-    
-    for(i = 0; i < nextPts.length; i++) {
-        var currentPt = nextPts[i];
-        updateFence(fence, currentPt, refPt);
-        refPt = getRefPt(fence);
+    if(fence.length > 3) {
+        for(i = 2; i >= 0; i--) {
+            var currentPt = fence.splice(i,1)[0];
+            refPt = getRefPt(fence);
+            fence = updateFence(fence, currentPt, refPt);
+            refPt = getRefPt(fence);
+        }
     }
     
     alert(fence);
@@ -38,31 +38,40 @@ var outerTrees = function() {
 function updateFence(fence, newPt, refPt) {
     var lastPt = fence[0],
         lastValidation = true;
-    for(var i = 1; i < fence.length; i++) {
-        var currentPt = fence[i],
+    for(var i = 1; i <= fence.length; i++) {
+        var currentPt = i == fence.length ? fence[0] : fence[i],
             isPtValid = validateNewPt(lastPt, currentPt, newPt, refPt);
         if(!lastValidation && !isPtValid) {
             fence[i-1][0] = newPt[0];
             fence[i-1][1] = newPt[1];
-            return;
+            return fence;
         }
         if(!lastValidation && isPtValid) {
             //include last pt in fence
-            fence.push(newPt);
-            return;
+            var leftArr = fence.splice(0, i-1);
+            leftArr.push(newPt);
+            fence = leftArr.concat(fence);
+            return fence;
         }
         if(lastValidation && !isPtValid) {
             lastValidation = false;
         }
         lastPt = currentPt;
-    }    
+    }
+    return fence;
 }
 
 function validateNewPt(fPt, sPt, newPt, refPt) {
+    if(fPt[0] == sPt[0]) {
+        if(Math.sign(refPt[0] - fPt[0]) == Math.sign(newPt[0] - fPt[0])) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     var m = (sPt[1] - fPt[1])/(sPt[0] - fPt[0]),
-        c = m * sPt[0] - sPt[1],
-        refSide = refPt[1] - m * refPt[0] - c,
-        newSide = newPt[1] - m * newPt[0] - c;
+        refSide = refPt[1] - m * (refPt[0] - sPt[0] + sPt[1]),
+        newSide = newPt[1] - m * (newPt[0] - sPt[0] + sPt[1]);
     if(Math.sign(refSide) == Math.sign(newSide)) {
         return true;
     }
