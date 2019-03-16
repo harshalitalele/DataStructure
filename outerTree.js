@@ -22,6 +22,15 @@ var outerTrees = function() {
         refPt = getRefPt(fence);
     }
     //validate first 3 points after this
+    var nextPts = fence.splice(0,3);
+    refPt = getRefPt(fence);
+    
+    for(i = 0; i < nextPts.length; i++) {
+        var currentPt = nextPts[i];
+        updateFence(fence, currentPt, refPt);
+        refPt = getRefPt(fence);
+    }
+    
     alert(fence);
     return fence;
 };
