@@ -9,11 +9,12 @@
  * @param {Point[]} points
  * @return {Point[]}
  */
-var points = [[1,1],[2,2],[2,0],[2,4],[3,3],[4,2]];
+var points = [[2,1],[2,2],[1,1],[4,2],[2,0],[2,4],[2,3],[3,3]];
 //var points = [[1,2],[2,2],[4,2]];
 
 var outerTrees = function() {
-    var fence = [points[0], points[1], points[2]],
+    var initialFence = setInitialValues(points),
+        fence = initialFence,
         refPt = getRefPt(fence);
     
     for(var i = 3; i < points.length; i++) {
@@ -22,18 +23,26 @@ var outerTrees = function() {
         refPt = getRefPt(fence);
     }
     //validate first 3 points after this
-    if(fence.length > 3) {
-        for(i = 2; i >= 0; i--) {
-            var currentPt = fence.splice(i,1)[0];
+    /*if(fence.length >= 3) {
+        for(i = 0; i < initialFence.length; i++) {
+            var currentPt = initialFence[i];
             refPt = getRefPt(fence);
             fence = updateFence(fence, currentPt, refPt);
             refPt = getRefPt(fence);
         }
-    }
+    }*/
     
     alert(fence);
     return fence;
 };
+
+function setInitialValues(pts) {
+    var initialFence = [];
+    for(var i = 0; i < 3; i++) {
+        initialFence.push([pts[i][0], pts[i][1]]);
+    }
+    return initialFence;
+}
 
 function updateFence(fence, newPt, refPt) {
     var lastPt = fence[0],
@@ -58,6 +67,10 @@ function updateFence(fence, newPt, refPt) {
         }
         lastPt = currentPt;
     }
+    if(!lastValidation) {
+        //include last pt in fence
+        fence.push(newPt);
+    }
     return fence;
 }
 
@@ -70,8 +83,9 @@ function validateNewPt(fPt, sPt, newPt, refPt) {
         }
     }
     var m = (sPt[1] - fPt[1])/(sPt[0] - fPt[0]),
-        refSide = refPt[1] - m * (refPt[0] - sPt[0] + sPt[1]),
-        newSide = newPt[1] - m * (newPt[0] - sPt[0] + sPt[1]);
+        c = sPt[1] - m * sPt[0],
+        refSide = refPt[1] - m * (refPt[0] - sPt[0]) - sPt[1],
+        newSide = newPt[1] - m * (newPt[0] - sPt[0]) - sPt[1];
     if(Math.sign(refSide) == Math.sign(newSide)) {
         return true;
     }
