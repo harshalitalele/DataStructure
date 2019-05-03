@@ -26,6 +26,7 @@ MyLinkedList.prototype.get = function(index) {
             curNode = curNode.next;
         }
     }
+    return -1;
 };
 
 /**
@@ -63,21 +64,30 @@ MyLinkedList.prototype.addAtIndex = function(index, val) {
     var curNode = this.head,
         nnode = new node(val),
         i = 0;
-    if(curNode == null && index == 0) {
-        curNode = nnode;
-    } else if(curNode.next == null && index == 1) {
-        curNode.next = nnode;
-    }
-    while(curNode.next != null) {
-        i++;
-        if(index == i) {
-            var nextNode = curNode.next;
-            nnode.next = nextNode;
-            curNode.next = nnode;
-            return;
+    if(curNode == null) {
+        if(index == 0) {
+            this.head = nnode;
         }
-        curNode = curNode.next;
+    } else if(curNode.next == null) {
+        if(index == 0) {
+            nnode.next = curNode;
+            this.head = nnode;
+        } else if(index == 1) {
+            this.head.next = nnode;
+        }
+    } else {
+        while(curNode != null) {
+            i++;
+            if(index == i) {
+                var nextNode = curNode.next;
+                nnode.next = nextNode;
+                curNode.next = nnode;
+                return;
+            }
+            curNode = curNode.next;
+        }
     }
+    
 };
 
 /**
@@ -100,8 +110,19 @@ MyLinkedList.prototype.deleteAtIndex = function(index) {
 };
 
 var obj = new MyLinkedList();
+obj.addAtHead(7);
+obj.addAtHead(2);
 obj.addAtHead(1);
-obj.addAtIndex(1,2);
-console.log(obj.get(1));
-console.log(obj.get(0));
-console.log(obj.get(2));
+obj.addAtIndex(3,0);
+obj.deleteAtIndex(2);
+obj.addAtHead(6);
+obj.addAtTail(4);
+console.log(obj.get(4));
+obj.addAtHead(4);
+obj.addAtIndex(5,0);
+obj.addAtHead(6);
+
+
+/*
+["MyLinkedList","addAtHead","addAtHead","addAtHead","addAtIndex","deleteAtIndex","addAtHead","addAtTail","get","addAtHead","addAtIndex","addAtHead"]
+[[],[7],[2],[1],[3,0],[2],[6],[4],[4],[4],[5,0],[6]]*/
