@@ -1,4 +1,4 @@
-var s = "10[a2[d]]";
+var s = "3[a]2[bc]";
 
 var decodeString = function() {
     var decodedStr = "";
@@ -16,6 +16,7 @@ function decodeSubStr(str, index, mul) {
         if(curCh === '[') {
             var repStr = decodeSubStr(str, i+1),
                 ans = mulStr(repStr[0], mul);
+            mul = "";
             subStr = subStr + ans;
             i = repStr[1];
         } else if(curCh === ']') {
