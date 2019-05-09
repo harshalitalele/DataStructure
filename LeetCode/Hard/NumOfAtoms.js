@@ -1,33 +1,66 @@
-var formula = "K4(ON(SO3)2)2";
+var formula = "Hs2(On4S)3";
+//K4(ON(SO3)2)2
 
 var countOfAtoms = function() {
-    
+    var ans = getCntObj(formula, 0);
+    console.log(ans);
 };
 
 function getCntObj(formula, index) {
     var curEl = '',
-        obj = {};
-    for(var i = index; i < formula.length; i++) {
+        obj = {},
+        i = index,
+        elArr = [];
+    while(i < formula.length) {
         var curCh = formula[i],
             isCapVal = isCapChar(curCh);
         if(isCapVal === 1) {
-            obj[curEl] = 1;
+            if(curEl) {
+                obj[curEl] = 1;
+            }
             curEl = curCh;
         } else if(isCapVal === -1) {
             curEl += curCh;
         } else if(!isNaN(Number(curCh))) {
             // start collecting count
-            /*if(!obj[curEl]) {
+            if(!curEl) {
+                multiplier(obj, elArr, Number(curCh));
+                elArr = [];
+            } else {
+                if(!obj[curEl]) {
+                    obj[curEl] = 1;
+                }
+                obj[curEl] = Number(curCh) * obj[curEl];
+                curEl = '';
+            }            
+        } else if(curCh === '(') {
+            elArr = [];
+            var op = getCntObj(formula, i+1);
+            elArr = Object.keys(op[0]);
+            mergeObj(obj, op[0]);
+            i = op[1];
+        } else if(curCh === ')') {
+            if(curEl) {
                 obj[curEl] = 1;
             }
-            obj[curEl] = Number(curCh) * obj[curEl];*/
-        } else if(curCh === '(') {
-            getCntObj(formula, index);
-        } else if(curCh === ')') {
-            //
+            return [obj, i];
         }
+        i++;
+    }
+    if(curEl) {
+        obj[curEl] = 1;
     }
     return obj;
+}
+
+function mergeObj(obj1, obj2) {
+    for(var k in obj2) {
+        if(obj1[k]) {
+            obj1[k] = obj1[k] + obj2[k];
+        } else {
+            obj1[k] = obj2[k];
+        }
+    }
 }
 
 function multiplier(obj, elArr, cnt) {
