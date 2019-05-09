@@ -1,10 +1,22 @@
-var formula = "Hs2L(On4S(GOn)2)3";
+var formula = "H2O";
 //K4(ON(SO3)2)2
 
 var countOfAtoms = function() {
     var ans = getCntObj(formula, 0);
-    console.log(ans);
+    console.log(getFormattedAns(ans));
 };
+
+function getFormattedAns(obj) {
+    var elems = Object.keys(obj),
+        sortedAns = "";
+    elems.sort();
+    for(var e in elems) {
+        var el = elems[e];
+        var cnt = obj[el] > 1 ? obj[el] : '';
+        sortedAns += el + cnt;
+    }
+    return sortedAns;
+}
 
 function getCntObj(formula, index) {
     var curEl = '',
