@@ -1,4 +1,4 @@
-var formula = "Hs2(On4S)3";
+var formula = "Hs2L(On4S(GOn)2)3";
 //K4(ON(SO3)2)2
 
 var countOfAtoms = function() {
@@ -24,7 +24,8 @@ function getCntObj(formula, index) {
         } else if(!isNaN(Number(curCh))) {
             // start collecting count
             if(!curEl) {
-                multiplier(obj, elArr, Number(curCh));
+                multiplier(elArr, Number(curCh));
+                mergeObj(obj, elArr);
                 elArr = [];
             } else {
                 if(!obj[curEl]) {
@@ -34,10 +35,13 @@ function getCntObj(formula, index) {
                 curEl = '';
             }            
         } else if(curCh === '(') {
+            if(curEl) {
+                obj[curEl] = 1;
+            }
+            curEl = '';
             elArr = [];
             var op = getCntObj(formula, i+1);
-            elArr = Object.keys(op[0]);
-            mergeObj(obj, op[0]);
+            elArr = op[0];
             i = op[1];
         } else if(curCh === ')') {
             if(curEl) {
@@ -63,11 +67,9 @@ function mergeObj(obj1, obj2) {
     }
 }
 
-function multiplier(obj, elArr, cnt) {
-    for(var i in elArr) {
-        var el = elArr[i];
-        var prevCnt = obj[el];
-        obj[el] = prevCnt * cnt;
+function multiplier(obj, cnt) {
+    for(var i in obj) {
+        obj[i] = obj[i] * cnt;
     }
 }
 
