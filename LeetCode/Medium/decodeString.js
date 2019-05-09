@@ -57,11 +57,17 @@ function decodeSubStr(str, index, mul) {
     for(var i = index; i < str.length; i++) {
         var curCh = str[i];
         if(curCh === '[') {
-            return decodeSubStr(str, i+1, Number(mul));
+            var repStr = decodeSubStr(str, i+1),
+                ans = mulStr(repStr[0], mul);
+            return [subStr + ans, repStr[1]];
         } else if(curCh === ']') {
-            return mulStr(subStr, mul);
+            return [subStr, index];
         } else if(!isNaN(Number(curCh))) {
-            mul += curCh;
+            if(mul === undefined) {
+                mul = curCh;
+            } else {
+                mul += curCh;
+            }
         } else {
             subStr += curCh;
         }
@@ -76,4 +82,4 @@ function mulStr(str, m) {
     return ans;
 }
 
-console.log(decodeSubStr("15[a2[d]]", 0));
+console.log(decodeSubStr("[a12[b]]", 0, 10));
