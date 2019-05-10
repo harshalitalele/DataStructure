@@ -1,5 +1,5 @@
-var formula = "H2O";
-//K4(ON(SO3)2)2
+var formula = "(((Hs11B41Rf46)20(At48Te45)32(Cs15Mt19OgHs34Ts5La33Ga23Np50Dy33O24)4)13((Po21ZnPdK27Pm16TlCo34Nd30Y4N)16(Nh2BaNa28Ga15LuAl38)17(Rb23ReRf2Rf33I32Te48Bh)50(Cf37Ne32W33BeRgIr21Cs34Mc17Zn43)43(Ho23ArEs38Er40Tb8DyIn41Tc36Hg21Cl9)42(Y8B25Ts16S10Fr2Lv22Po6)2(Zn46N34Ds7Sg20HoRf31P25ZrIHo22)40(FeRh50Kr9ThPt49)37(TaLrKr35Kr12SrCd26Xe28Mt26CnFl)43)23)17";
+//((HHe28Be26He)9)34
 
 var countOfAtoms = function() {
     var ans = getCntObj(formula, 0);
@@ -28,22 +28,28 @@ function getCntObj(formula, index) {
             isCapVal = isCapChar(curCh);
         if(isCapVal === 1) {
             if(curEl) {
-                obj[curEl] = 1;
+                if(!obj[curEl]) {
+                    obj[curEl] = 0;
+                }
+                obj[curEl] += 1;
             }
             curEl = curCh;
         } else if(isCapVal === -1) {
             curEl += curCh;
         } else if(!isNaN(Number(curCh))) {
             // start collecting count
+            // get next numbers and update index
+            var numOp = getWholeNum(formula, i);
+            i = numOp[1];
             if(!curEl) {
-                multiplier(elArr, Number(curCh));
+                multiplier(elArr, Number(numOp[0]));
                 mergeObj(obj, elArr);
                 elArr = [];
             } else {
                 if(!obj[curEl]) {
-                    obj[curEl] = 1;
+                    obj[curEl] = 0;
                 }
-                obj[curEl] = Number(curCh) * obj[curEl];
+                obj[curEl] = Number(numOp[0]) + obj[curEl];
                 curEl = '';
             }            
         } else if(curCh === '(') {
@@ -51,22 +57,44 @@ function getCntObj(formula, index) {
                 obj[curEl] = 1;
             }
             curEl = '';
-            elArr = [];
+            elArr = {};
             var op = getCntObj(formula, i+1);
             elArr = op[0];
             i = op[1];
         } else if(curCh === ')') {
             if(curEl) {
-                obj[curEl] = 1;
+                if(!obj[curEl]) {
+                    obj[curEl] = 0;
+                }
+                obj[curEl] += 1;
             }
             return [obj, i];
         }
         i++;
     }
     if(curEl) {
-        obj[curEl] = 1;
+        if(!obj[curEl]) {
+            obj[curEl] = 0;
+        }
+        obj[curEl] += 1;
+    }
+    if(elArr != {}) {
+        mergeObj(obj, elArr);
     }
     return obj;
+}
+
+function getWholeNum(str, index) {
+    var num = '';
+    for(var i = index; i < str.length; i++) {
+        var curCh = str[i];
+        if(!isNaN(Number(curCh))) {
+            num += curCh;
+        } else {
+            break;
+        }
+    }
+    return [Number(num), i-1];
 }
 
 function mergeObj(obj1, obj2) {
